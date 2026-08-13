@@ -7,27 +7,37 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static edu.wpi.first.units.Units.Meter;
+
 import java.io.File;
 import edu.wpi.first.wpilibj.Filesystem;
 import swervelib.parser.SwerveParser;
 import swervelib.SwerveDrive;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  double maximumSpeed = Units.feetToMeters(4.5);
   File directory = new File(Filesystem.getDeployDirectory(),"swerve");
-  SwerveDrive  swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
+  SwerveDrive swerveDrive;
   public SwerveSubsystem() {
     try
     {
-      drive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve/base"))
-              .createSwerveDrive(cfg);
+      swerveDrive = new SwerveParser(directory)
+          .createSwerveDrive(
+              Constants.maxSpeed,
+              new Pose2d(
+                  new Translation2d(Meter.of(13), Meter.of(4)), Rotation2d.fromDegrees(180)));
+      // Alternative method if you don't want to supply the conversion factor via JSON
+      // files.
+      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
+      // angleConversionFactor, driveConversionFactor);
     } catch (Exception e)
     {
-      System.out.println("Error creating swerve drive");
-      System.out.println(e);
       throw new RuntimeException(e);
     }
   }
@@ -64,5 +74,10 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public Object getSwerveDrive() {
+    // TODO Auto-generated method stub
+    return swerveDrive;
   }
 }
