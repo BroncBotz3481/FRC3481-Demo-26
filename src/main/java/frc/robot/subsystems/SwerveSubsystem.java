@@ -1,10 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
-//package frc.robot.subsystems;
-package swervelib.parser;
-
+package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.Pair;
 
 import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -47,6 +45,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
+import yams.mechanisms.swerve.SwerveDrive;
 import edu.wpi.first.wpilibj.RobotBase;
 import swervelib.parser.json.ModuleJson;
 import swervelib.parser.json.PIDFPropertiesJson;
@@ -54,10 +53,12 @@ import swervelib.parser.json.PhysicalPropertiesJson;
 import swervelib.parser.json.SwerveDriveJson;
 import yams.gearing.GearBox;
 import yams.mechanisms.config.SwerveModuleConfig;
-import yams.mechanisms.swerve.SwerveDrive;
+
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+
+
 
 
 
@@ -65,6 +66,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   //File directory = new File(Filesystem.getDeployDirectory(),"swerve");
   private SwerveDrive swerveDrive;
+
   public SwerveDriveSubsystem()
   {
     SmartDashboard.putData(this);
@@ -74,7 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
         .withTelemetry(TelemetryVerbosity.HIGH);
     try
     {
-      swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve/base"))
+      swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"))
                 .createSwerveDrive(cfg);
     } catch (Exception e)
     {
