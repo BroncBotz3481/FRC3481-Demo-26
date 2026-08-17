@@ -28,21 +28,11 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
       
-  SwerveInputStream driveAngularVelocity =
-      SwerveInputStream.of(
-                           drivebase.getSwerveDrive(),
-                           () -> m_driverController.getLeftY() * -1,
-                           () -> m_driverController.getLeftX() * -1)
-                       .withControllerRotationAxis(() -> m_driverController.getRightX() * -1)
-                       .deadband(OperatorConstants.DEADBAND)
-                       .scaleTranslation(1.0)
-                       .scaleRotation(0.8)
-                       .allianceRelativeControl(true);
+  private final SwerveInputStream    driveAngularVelocity = drivebase.getAngularVelocityStream(m_driverController::getLeftY,
+                                                                                            m_driverController::getLeftX,
+                                                                                            ()->m_driverController.getRawAxis(2))
+                                                                  .withAllianceRelativeControl();
 
-  SwerveInputStream stream = driveAngularVelocity.copy().withControllerHeadingAxis(
-                                                              ()->  Math.cos(Degrees.of(headingDegrees).in(Radians)), 
-                                                              ()->Math.sin(Degrees.of(headingDegrees).in(Radians)))
-                                                            .headingWhile(true);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -67,6 +57,8 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    drivebase.setDefaultCommand(drivebase.drive(driveAngularVelocity));
+    m_driverController.button(1).whileTrue(drivebase.sysIdModule("frontleft"));
   }
 
   /**
