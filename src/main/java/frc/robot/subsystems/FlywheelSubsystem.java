@@ -92,7 +92,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
 
     public void setDutyCycleSetpoint(double dutyCycle) {
-         flywheel.setDutyCycleSetpoint(0);
+         flywheel.setDutyCycleSetpoint(dutyCycle);
     }
 
 }
