@@ -29,21 +29,13 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
       
-  SwerveInputStream driveAngularVelocity =
-      SwerveInputStream.of(
-                           drivebase.getSwerveDrive(),
-                           () -> m_driverController.getLeftY() * -1,
-                           () -> m_driverController.getLeftX() * -1)
-                       .withControllerRotationAxis(() -> m_driverController.getRightX() * -1)
-                       .deadband(OperatorConstants.DEADBAND)
-                       .scaleTranslation(1.0)
-                       .scaleRotation(0.8)
-                       .allianceRelativeControl(true);
 
-  SwerveInputStream stream = driveAngularVelocity.copy().withControllerHeadingAxis(
-                                                              ()->  Math.cos(Degrees.of(headingDegrees).in(Radians)), 
-                                                              ()->Math.sin(Degrees.of(headingDegrees).in(Radians)))
-                                                            .headingWhile(true);
+  private final SwerveInputStream driveAngularVelocity =
+      drivebase.getAngularVelocityStream(
+                m_driverController::getLeftY,
+                m_driverController::getLeftX,
+                () -> m_driverController.getRawAxis(2))
+            .withAllianceRelativeControl();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -62,12 +54,14 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    drivebase.setDefaultCommand(drivebase.drive(driveAngularVelocity));
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    m_driverController.start().and(m_driverController.back()).onTrue(drivebase.zeroGyro());
   }
 
   /**
