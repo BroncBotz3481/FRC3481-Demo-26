@@ -52,12 +52,11 @@ public class FlywheelSubsystem extends SubsystemBase {
             new TalonFXWrapper(leftFlywheelMotor, DCMotor.getKrakenX60(4), motorConfig);
 
     private final FlyWheelConfig flywheelConfig =
-            new FlyWheelConfig(motor)
+            new FlyWheelConfig()
                     .withDiameter(Inches.of(4))
-                    .withMass(Pounds.of(1))
                     .withTelemetry("Flywheel", TelemetryVerbosity.HIGH);
 
-    private final FlyWheel flywheel = new FlyWheel(flywheelConfig);
+    private final FlyWheel flywheel = new FlyWheel(flywheelConfig, motor);
 
     public FlywheelSubsystem() {
     }
